@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeonMatch Premium</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Orbitron',sans-serif;
+}
+
+body{
+background:#0f0f0f;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+overflow:hidden;
+}
+
+/* Fondo glow animado */
+body::before{
+content:"";
+position:absolute;
+width:200%;
+height:200%;
+background:radial-gradient(circle at 30% 30%, #ff00c822, transparent),
+radial-gradient(circle at 70% 70%, #00f5ff22, transparent);
+animation:bg 12s linear infinite;
+}
+
+@keyframes bg{
+0%{transform:translate(0,0);}
+50%{transform:translate(-60px,-60px);}
+100%{transform:translate(0,0);}
+}
+
+.container{
+position:relative;
+background:#141414;
+padding:40px;
+border-radius:20px;
+width:360px;
+box-shadow:0 0 40px #ff00c855;
+text-align:center;
+z-index:1;
+}
+
+h1{
+color:#ff00c8;
+text-shadow:0 0 20px #ff00c8;
+margin-bottom:15px;
+}
+
+.price{
+font-size:32px;
+color:#39ff14;
+text-shadow:0 0 15px #39ff14;
+margin:15px 0;
+}
+
+.features{
+text-align:left;
+font-size:13px;
+margin:20px 0;
+line-height:1.8;
+}
+
+.features span{
+color:#00f5ff;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:20px;
+background:#39ff14;
+border:none;
+border-radius:10px;
+font-size:14px;
+cursor:pointer;
+transition:0.3s;
+box-shadow:0 0 20px #39ff14;
+}
+
+button:hover{
+transform:scale(1.05);
+box-shadow:0 0 30px #39ff14;
+}
+
+.back{
+margin-top:15px;
+font-size:12px;
+color:#00f5ff;
+cursor:pointer;
+}
+
+.back:hover{
+text-shadow:0 0 10px #00f5ff;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>NEONMATCH PREMIUM 🔥</h1>
+
+<div class="price">$99 MXN / mes</div>
+
+<div class="features">
+✔ <span>Likes ilimitados</span><br>
+✔ Ver quién te dio like<br>
+✔ Perfil destacado 3x más visible<br>
+✔ Filtros por ciudad y edad<br>
+✔ Modo invisible<br>
+✔ Sin anuncios
+</div>
+
+
+<button onclick="window.location.href='/activate_premium'">
+ACTIVAR PREMIUM
+</button>
+
+<div class="back" onclick="goBack()">Volver</div>
+
+</div>
+
+<script>
+
+function activatePremium(){
+alert("🔥 Pago simulado exitoso.\nAhora eres PREMIUM.");
+localStorage.setItem("premium","true");
+window.location.href="swipe.html";
+}
+
+function goBack(){
+window.location.href="swipe.html";
+}
+
+</script>
+
+</body>
+</html>

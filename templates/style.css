@@ -1,0 +1,43 @@
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top, #0f0f1a, #000);
+    color: white;
+    text-align: center;
+}
+
+.card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 400px;
+    margin: 50px auto;
+    box-shadow: 0 0 30px #ff00ff55;
+    animation: float 4s ease-in-out infinite;
+}
+
+button {
+    background: linear-gradient(45deg, #ff00ff, #00ffff);
+    border: none;
+    padding: 12px 25px;
+    border-radius: 30px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px #00ffff;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px);}
+    50% { transform: translateY(-10px);}
+    100% { transform: translateY(0px);}
+}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mi Perfil - NeonMatch</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top, #0f0f1a, #000);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+{% if user[3] %}
+    <img src="/static/uploads/{{ user[3] }}" 
+         style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:15px;">
+{% else %}
+    <p>No tienes foto</p>
+{% endif %}
+
+<form action="/upload_photo" method="POST" enctype="multipart/form-data">
+    <input type="file" name="photo" required>
+    <button type="submit" class="premium-btn">Subir Foto</button>
+</form>
+
+.card {
+    width: 350px;
+    padding: 30px;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 40px #ff00ff55;
+    text-align: center;
+    animation: float 5s ease-in-out infinite;
+}
+
+h2 {
+    margin-bottom: 10px;
+    background: linear-gradient(45deg,#ff00ff,#00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.status {
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+.premium {
+    color: #00ffcc;
+    font-weight: bold;
+}
+
+.normal {
+    color: #ff4d4d;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 30px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.premium-btn {
+    background: linear-gradient(45deg,#ff00ff,#00ffff);
+    color: white;
+}
+
+.back-btn {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #00ffff;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px);}
+    50% { transform: translateY(-10px);}
+    100% { transform: translateY(0px);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Mi Perfil 💜</h2>
+
+    <p><strong>Email:</strong> {{ user[0] }}</p>
+
+    <div class="status">
+        {% if user[1] == 1 %}
+            <p class="premium">💎 Cuenta Premium Activa</p>
+        {% else %}
+            <p class="normal">🔥 Cuenta Gratuita</p>
+        {% endif %}
+    </div>
+
+    <p><strong>Likes restantes:</strong> {{ user[2] }}</p>
+
+    {% if user[1] == 0 %}
+        <a href="/premium">
+            <button class="premium-btn">Activar Premium</button>
+        </a>
+    {% endif %}
+
+    <a href="/swipe">
+        <button class="back-btn">Volver a Swipe</button>
+    </a>
+
+</div>
+
+</body>
+</html>

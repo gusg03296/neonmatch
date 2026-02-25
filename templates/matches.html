@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Matches</title>
+</head>
+<body style="background:black;color:white;">
+<h2>Tus Matches 🔥</h2>
+
+{% for match in matches %}
+<a href="/chat/{{ match[0] }}">
+Ir al Chat {{ match[0] }}
+</a><br><br>
+{% endfor %}
+
+</body>
+</html>

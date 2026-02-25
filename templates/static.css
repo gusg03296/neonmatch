@@ -1,0 +1,11 @@
+body::after {
+    content: "";
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    background: #ff00ff55;
+    filter: blur(150px);
+    top: 10%;
+    left: 20%;
+    z-index: -1;
+}

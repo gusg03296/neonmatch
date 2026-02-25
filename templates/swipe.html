@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>NeonMatch - Swipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top, #0f0f1a, #000);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    position: relative;
+    width: 350px;
+    height: 550px;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 0 40px #ff00ff55;
+    animation: float 5s ease-in-out infinite;
+}
+
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.info {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.9));
+}
+
+h2 {
+    margin: 0;
+}
+
+.bio {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.actions {
+    position: absolute;
+    bottom: -70px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+button {
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.like {
+    background: linear-gradient(45deg,#ff00ff,#00ffff);
+    color: white;
+}
+
+.pass {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+button:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px #00ffff;
+}
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top, #0f0f1a, #000);
+    color: white;
+}
+
+.main {
+    height: calc(100vh - 60px); /* resta el header */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 320px;
+    height: 480px;
+    border-radius: 25px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 40px #ff00ff55;
+    animation: float 4s ease-in-out infinite;
+}
+.top-bar {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.logout {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 12px;
+    text-decoration: none;
+    color: white;
+    opacity: 0.7;
+}
+
+.match-popup {
+    position: fixed;
+    top: 40%;
+    background: black;
+    padding: 20px 40px;
+    border-radius: 20px;
+    display: none;
+    box-shadow: 0 0 40px #ff00ff;
+    animation: pop 0.5s ease;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px);}
+    50% { transform: translateY(-10px);}
+    100% { transform: translateY(0px);}
+}
+
+@keyframes pop {
+    from { transform: scale(0.5); opacity: 0;}
+    to { transform: scale(1); opacity: 1;}
+}
+</style>
+</head>
+
+<body>
+<a href="/profile" style="position:absolute; left:20px; top:20px; color:white; text-decoration:none;">
+👤 Perfil
+</a>
+<div class="top-bar">
+    NeonMatch 💜
+    <a href="/logout" class="logout">Salir</a>
+</div>
+<div class="main">
+    <div class="card">
+        ...
+    </div>
+</div>
+    <img src="{{ profile[4] }}" alt="foto">
+
+    <div class="info">
+        <h2>{{ profile[1] }}, {{ profile[2] }}</h2>
+        <p class="bio">{{ profile[3] }}</p>
+    </div>
+
+    <div class="actions">
+        <button class="pass" onclick="location.reload()">❌</button>
+        <button class="like" onclick="likeProfile({{ profile[0] }})">❤️</button>
+    </div>
+</div>
+
+<div class="match-popup" id="matchPopup">
+    🎉 ¡Es un Match!
+</div>
+
+<script>
+function likeProfile(profileId) {
+    fetch("/like/" + profileId)
+    .then(res => res.json())
+    .then(data => {
+
+        if(data.status === "no_likes") {
+            alert("🔥 Te quedaste sin likes. Hazte Premium.");
+            window.location.href = "/premium";
+        }
+
+        if(data.status === "match") {
+            document.getElementById("matchPopup").style.display = "block";
+            setTimeout(() => {
+                window.location.href = "/matches";
+            }, 2000);
+        }
+
+        if(data.status === "liked") {
+            location.reload();
+        }
+
+    });
+}
+</script>
+
+</body>
+</html>

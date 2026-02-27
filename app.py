@@ -8,17 +8,6 @@ app.secret_key = "super_secret_key"
 
 UPLOAD_FOLDER = "static/uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-conn = sqlite3.connect("database.db")
-c = conn.cursor()
-
-try:
-    c.execute("ALTER TABLE users ADD COLUMN photo TEXT")
-    print("Columna photo agregada")
-except:
-    print("La columna ya existe")
-
-conn.commit()
-conn.close()
 
 
 
@@ -63,10 +52,10 @@ def init_db():
 
     # MATCHES
     c.execute("""
-    CREATE TABLE IF NOT EXISTS matches (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user1 INTEGER,
-        user2 INTEGER
+     CREATE TABLE IF NOT EXISTS matches (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user1 INTEGER,
+    user2 INTEGER,
     )
     """)
 
@@ -99,9 +88,6 @@ def init_db():
     conn.close()
 
 
-init_db()
-
-
 # =========================
 # ROUTES
 # =========================
@@ -125,29 +111,40 @@ def upload_photo():
         conn.close()
 
     return redirect("/profile")
-@app.route("/")
+
+@app.route("/home")
 def home():
-    return render_template("index.html")
+    if "user" not in session:
+        return redirect("/")
+    return render_template("home.html")
 
 
 @app.route("/register", methods=["POST"])
 def register():
+
     email = request.form["email"]
     password = request.form["password"]
+    file = request.files["photo"]
+
+    filename = None
+
+    if file and file.filename != "":
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        file.save(filepath)
 
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
 
-    try:
-        c.execute("INSERT INTO users (email, password) VALUES (?,?)", (email, password))
-        conn.commit()
-    except:
-        return "Usuario ya existe"
+    c.execute("""
+        INSERT INTO users (email, password, premium, likes, photo)
+        VALUES (?, ?, 0, 10, ?)
+    """, (email, password, filename))
 
+    conn.commit()
     conn.close()
+
     return redirect("/")
-
-
 @app.route("/login", methods=["POST"])
 def login():
     email = request.form["email"]
@@ -163,7 +160,7 @@ def login():
 
     if user:
         session["user_id"] = user[0]
-        return redirect("/swipe")
+        return redirect("/home")
     else:
         return "Credenciales incorrectas"
 
@@ -190,16 +187,29 @@ def profile():
 
     user_id = session["user_id"]
 
-    conn = sqlite3.connect("database.db")
-    c = conn.cursor()
+    with sqlite3.connect("database.db") as conn:
+        c = conn.cursor()
 
-    c.execute("SELECT email, premium, likes FROM users WHERE id=?", (user_id,))
-    user = c.fetchone()
+        c.execute("""
+            SELECT id, email, premium, likes
+            FROM users
+            WHERE id=?
+        """, (user_id,))
 
-    conn.close()
+        user = c.fetchone()
 
-    return render_template("profile.html", user=user)
+    if not user:
+        session.clear()
+        return redirect("/")
 
+    user_data = {
+        "id": user[0],
+        "email": user[1],
+        "premium": bool(user[2]),
+        "likes": user[3]
+    }
+
+    return render_template("profile.html", user=user_data)
 @app.route("/like/<int:profile_id>")
 def like(profile_id):
     if "user_id" not in session:
@@ -241,48 +251,6 @@ def like(profile_id):
 
     return jsonify({"status": "liked", "likes": likes})
 
-
-@app.route("/matches")
-def matches_view():
-    if "user_id" not in session:
-        return redirect("/")
-
-    user_id = session["user_id"]
-
-    conn = sqlite3.connect("database.db")
-    c = conn.cursor()
-
-    c.execute("SELECT * FROM matches WHERE user1=? OR user2=?", (user_id, user_id))
-    matches = c.fetchall()
-
-    conn.close()
-
-    return render_template("matches.html", matches=matches)
-
-
-@app.route("/chat/<int:match_id>", methods=["GET", "POST"])
-def chat(match_id):
-    if "user_id" not in session:
-        return redirect("/")
-
-    user_id = session["user_id"]
-
-    conn = sqlite3.connect("database.db")
-    c = conn.cursor()
-
-    if request.method == "POST":
-        text = request.form["text"]
-        c.execute("INSERT INTO messages (match_id, sender_id, text) VALUES (?,?,?)",
-                  (match_id, user_id, text))
-        conn.commit()
-
-    c.execute("SELECT sender_id, text FROM messages WHERE match_id=?", (match_id,))
-    messages = c.fetchall()
-
-    conn.close()
-
-    return render_template("chat.html", messages=messages, match_id=match_id)
-
 @app.route("/get_messages/<int:match_id>")
 def get_messages(match_id):
     if "user_id" not in session:
@@ -317,6 +285,58 @@ def send_message(match_id):
 
     return jsonify({"status": "sent"})
 
+@app.route("/matches")
+def matches_view():
+    if "user_id" not in session:
+        return redirect("/")
+
+    user_id = session["user_id"]
+
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM matches WHERE user1=? OR user2=?", (user_id, user_id))
+    matches = c.fetchall()
+
+    conn.close()
+
+    return render_template("matches.html", matches=matches)
+
+@app.route("/chat/<int:match_id>")
+def chat(match_id):
+    if "user_id" not in session:
+        return redirect("/")
+
+    user_id = session["user_id"]
+
+    with sqlite3.connect("database.db") as conn:
+        c = conn.cursor()
+
+        # 🔒 Verificar que el usuario pertenece al match
+        c.execute("""
+            SELECT * FROM matches
+            WHERE id=? AND (user1=? OR user2=?)
+        """, (match_id, user_id, user_id))
+
+        match = c.fetchone()
+
+        if not match:
+            return redirect("/matches")
+
+        # 📩 Obtener mensajes ordenados
+        c.execute("""
+            SELECT sender_id, text, created_at
+            FROM messages
+            WHERE match_id=?
+            ORDER BY id ASC
+        """, (match_id,))
+
+        messages = c.fetchall()
+
+    return render_template("chat.html",
+                           messages=messages,
+                           match_id=match_id,
+                           user_id=user_id)
 @app.route("/premium")
 def premium():
     if "user_id" not in session:

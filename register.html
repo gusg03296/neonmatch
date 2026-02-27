@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>NeonMatch - Registro</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background: radial-gradient(circle at top,#0f0f1a,#000);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    background:rgba(255,255,255,0.05);
+    padding:40px;
+    border-radius:25px;
+    width:350px;
+    text-align:center;
+    box-shadow:0 0 25px #ff00ff33;
+    backdrop-filter:blur(15px);
+}
+
+h1{
+    margin-bottom:20px;
+    background:linear-gradient(45deg,#ff00ff,#00ffff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:none;
+    border-radius:20px;
+    outline:none;
+}
+
+input[type="file"]{
+    background:white;
+    color:black;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:25px;
+    font-weight:600;
+    cursor:pointer;
+    background:linear-gradient(45deg,#ff00ff,#00ffff);
+    color:white;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 20px #00ffff;
+}
+
+a{
+    display:block;
+    margin-top:15px;
+    color:#00ffff;
+    text-decoration:none;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
+.error{
+    color:#ff4d4d;
+    font-size:14px;
+    margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>💜 Crear Cuenta</h1>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="/register" enctype="multipart/form-data">
+        <input type="text" name="username" placeholder="Usuario" required>
+        <input type="password" name="password" placeholder="Contraseña" required>
+        <input type="number" name="age" placeholder="Edad" required>
+        <input type="text" name="bio" placeholder="Descripción corta">
+        <input type="file" name="photo" accept="image/*" required>
+
+        <button type="submit">🔥 Registrarme</button>
+    </form>
+
+    <a href="/">¿Ya tienes cuenta? Inicia sesión</a>
+
+</div>
+
+</body>
+</html>
